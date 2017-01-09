@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+</head>
+<body>
+<div id="net">
+<p id="tra"></p>
+</div>
+<div id="pro" >
+</div>
+<div id="mem">
+<canvas id="ram" width="500" height="300"></canvas>
+</div>
+
+<div id="hard">
+<canvas id="disk" width="500" height="300"></canvas>
+</div>
+</body>
+<script type="text/javascript">
+var in_data,out_data;
+	var dd = Array();
+function getNet() {
+$.getJSON("{% url 'ajax-dict' %}",function (ret) {
+	//$("p#tra").text("<p> in"+ret.in + "out" +ret.out + "</p>");
+	in_data = ret.in;
+	out_data = ret.out;
+	dd.push(in_data);
+	mem();
+})
+}
+
+function add(num) {
+	$("div#pro").append("<div class=\"progress\" id=\"first\"></div>");
+	$("div#first").append("<div class=\"progress-bar\" role=\"progessbar\" aria-valuenow=\"100\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: " + num + "%;\">");
+}
+
+var ctx = document.getElementById("ram").getContext("2d");
+  var data ={
+		datasets: [{
+			label:"net",
+			data:dd,
+			backgroundColor:["#FF6384"]
+		}]
+};
+var newChart = new Chart(ctx,{
+	type:"line",
+	data:data,
+	options:{
+	responsive: true,
+	maintainAspectRatio: false
+	}
+});
+function mem() {
+	newChart.data = dd;
+	newChart.update();
+}
+
+var disk_ctx = document.getElementById("disk").getContext("2d");
+var disk_data = {
+	datasets:[{
+	data:[74,676,0],
+	backgroundColor:["#FF6384",
+                "#36A2EB",
+                "#FFCE56"],
+  hoverBackgroundColor:["#FF6384",
+                "#36A2EB",
+                "#FFCE56"]
+	}]
+};
+var chart_disk = new Chart(disk_ctx,{
+	type:"doughnut",
+	data:disk_data,
+	options:{
+	responsive: true,
+	maintainAspectRatio: false
+	}
+});
+
+window.setInterval(getNet,1000);
+
+</script>
+<style type="text/css">
+div#pro{
+position: relative;
+left: 30px;
+top: 40px;
+}
+div#mem{
+max-width: 600px;
+position: relative;
+left: 30px;
+right: 30px;
+top: 50px;
+}
+div#hard{
+max-width: 600px;
+position: relative;
+left: 30px;
+right: 30px;
+top: 50px;
+}
+</style>
+</html>
+
