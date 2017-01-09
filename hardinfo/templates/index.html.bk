@@ -26,7 +26,7 @@
 var in_data,out_data;
 	var dd = Array();
 function getNet() {
-$.getJSON("{% url 'ajax-dict' %}",function (ret) {
+$.getJSON("{% url 'get_net_io' %}",function (ret) {
 	//$("p#tra").text("<p> in"+ret.in + "out" +ret.out + "</p>");
 	in_data = ret.in;
 	out_data = ret.out;
