@@ -87,7 +87,8 @@ def get_swap_usage(request):
 def get_ram_usage(request):
     ram = psutil.virtual_memory().total/(1024*1024)
     usage = psutil.virtual_memory().used/(1024*1024)
-    return JsonResponse({"total":ram,"usage":usage})
+    free = psutil.virtual_memory().free/(1024*1024)
+    return JsonResponse({"total":ram,"usage":usage,"free":free})
 
 def get_cpu_usage(request):
     cpu_count = psutil.cpu_count()
@@ -99,16 +100,23 @@ def get_cpu_usage(request):
 
 
 def get_boot_time(request):
-    boot_time = time.strftime("%y-%m-%d %H:%M:%S",time.localtime(psutil.boot_time()))
-    return JsonResponse({'boot_time':boot_time})
+    mic = psutil.boot_time()
+    boot_time = {}
+    boot_time['mic'] = mic * 1000
+    return JsonResponse(boot_time)
 
 def get_net_io(request):
-    msg = run_the_cmd("ifstat 1/1 1")
-    msg = msg[2]
-    li = msg.split(' ')
-    net={"in":li[4],"out":li[-1].strip('\n')}
-    return JsonResponse(net)
+    eth_info = psutil.net_io_counters(pernic=True).keys()
+    recv = {}
+    sent = {}
+    eth_list = []
+    for key in eth_info:
+        if key != 'lo':
+            eth_list.append(key)
+            recv.setdefault(key, psutil.net_io_counters(pernic=True).get(key).bytes_recv)
+            sent.setdefault(key, psutil.net_io_counters(pernic=True).get(key).bytes_sent)
+    net_io = {'eth':eth_list,'recv':recv,'sent':sent}
+    return JsonResponse(net_io)
 
 def index(request):
     return render(request,'dashboard.html')
-

@@ -60,12 +60,20 @@
             </div>
           </div>
         </div>
+        <!-- disk -->
         <div class="panel panel-primary">
 					<div class="panel-heading">
 					<h3 class="panel-title">Disk</h3>					
 					</div>        
 					<div class="panel-body" id="disk_chart">
 						</div>
+					</div>
+					<!-- cpu -->
+					<div class="panel panel-primary">
+					<div class="panel-heading">
+					<h3 class="panel-title">CPU</h3>					
+					</div>
+					<div class="panel-body" id="cpu_chart"></div>
 					</div>
         </div>
       </div>
@@ -80,52 +88,21 @@
     <script src="{% static "assets/javascripts/application-985b892b.js" %}" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="{% static "assets/javascripts/data_chart.js" %}" type="text/javascript"></script>
     <script type="text/javascript">
-			function disk_usage(disk,dd) {
-			console.log(disk);
-			var ctx = document.getElementById(disk).getContext("2d");
-    	var data = {
-    	labels:["usage","free"],
-				datasets:[{
-					data:dd,
-					backgroundColor:[
-					"#36A2EB",
-					"#FF6384" 
-					],				
-				}]    	
-    	};
-    	var mychart = new Chart(ctx,{
-    		type:'doughnut',
-    		data:data,
-    		options:{
-					responsive: true,
-					maintainAspectRatio: false
-    		}
-    	});
-			}
-			function add_disk_chart(num) {
-				$("div#disk_chart").append("<div class=\"col-md-3\" id=\"disk_chart_" + num + "\"></div>");
-				$("div#disk_chart_"+num).append("<canvas id=\"disk_usage"+num + "\" width=\"120\" height=\"120\"></canvas>");
-			}
-
-			function getDisk() {
+    function getDisk_1() {
 			  $.getJSON("{% url 'get_disk_usage' %}",function (ret) {
-			  	var arr = [];
-			  	$.each(ret,function (k,v) {
-			  		arr[k]=v;
-			  	})
-					for (var x=0;x<arr['part_count'];x++) {
+					for (var x=0;x<ret['part_count'];x++) {
 						var y = x.toString();
 						add_disk_chart(y);
-						total=arr['part_free'+y];
-						usage=arr['part_usage'+y];
+						total=ret['part_free'+y];
+						usage=ret['part_usage'+y];
 						dd = [total,usage];
 						disk_usage("disk_usage"+y,dd);
 					}
 			  })	
 			}
-			getDisk();
-
+			getDisk("{% url 'get_disk_usage' %}");
     </script>
   </body>
 </html>

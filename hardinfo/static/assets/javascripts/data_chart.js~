@@ -1,0 +1,38 @@
+function disk_usage(disk,dd) {
+			var ctx = document.getElementById(disk).getContext("2d");
+    	var data = {
+    	labels:["free","usage"],
+				datasets:[{
+					data:dd,
+					backgroundColor:[
+					"#36A2EB",
+					"#FF6384" 
+					],				
+				}]    	
+    	};
+    	var mychart = new Chart(ctx,{
+    		type:'doughnut',
+    		data:data,
+    		options:{
+					responsive: true,
+					maintainAspectRatio: false
+    		}
+    	});
+			}
+			function add_disk_chart(num) {
+				$("div#disk_chart").append("<div class=\"col-md-3\" id=\"disk_chart_" + num + "\"></div>");
+				$("div#disk_chart_"+num).append("<canvas id=\"disk_usage"+num + "\" width=\"120\" height=\"120\"></canvas>");
+			}
+
+			  function getDisk(url) {
+			  $.getJSON("url,function (ret) {
+					for (var x=0;x<ret['part_count'];x++) {
+						var y = x.toString();
+						add_disk_chart(y);
+						total=ret['part_free'+y];
+						usage=ret['part_usage'+y];
+						dd = [total,usage];
+						disk_usage("disk_usage"+y,dd);
+					}
+			  })	
+			}
