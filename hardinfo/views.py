@@ -70,7 +70,7 @@ def get_disk_usage(request):
     disk_info = {}
     i = 0
     for x in disk:
-        disk_info['part%d'%i] = x.device
+        disk_info['part%d'%i] = x.device.replace("/dev/","")
         disk_info['mount%d'%i] = x.mountpoint
         usage = psutil.disk_usage(x.mountpoint)
         disk_info['part_free%d'%i] = usage.free/(1024*1024)
@@ -105,18 +105,40 @@ def get_boot_time(request):
     boot_time['mic'] = mic * 1000
     return JsonResponse(boot_time)
 
-def get_net_io(request):
+def get_eth_name_s():
     eth_info = psutil.net_io_counters(pernic=True).keys()
+    eth_list = []
+    for x in eth_info:
+        if x != 'lo':
+            eth_list.append(x)
+    eth_list.sort()
+    return eth_list
+
+def get_eth_name(request):
+    eth_list = get_eth_name_s()
+    return JsonResponse({'eth':eth_list})
+
+def get_net_io(request):
+    eth_info = get_eth_name_s()
+    old_recv = {}
+    old_sent = {}
     recv = {}
     sent = {}
-    eth_list = []
     for key in eth_info:
-        if key != 'lo':
-            eth_list.append(key)
-            recv.setdefault(key, psutil.net_io_counters(pernic=True).get(key).bytes_recv)
-            sent.setdefault(key, psutil.net_io_counters(pernic=True).get(key).bytes_sent)
-    net_io = {'eth':eth_list,'recv':recv,'sent':sent}
+        old_recv.setdefault(key, psutil.net_io_counters(pernic=True).get(key).bytes_recv)
+        old_sent.setdefault(key, psutil.net_io_counters(pernic=True).get(key).bytes_sent)
+    time.sleep(1)
+    for key in eth_info:
+        re = (psutil.net_io_counters(pernic=True).get(key).bytes_recv - old_recv[key]) / (1024*1024)
+        se = (psutil.net_io_counters(pernic=True).get(key).bytes_sent - old_sent[key]) / (1024*1024)
+        recv.setdefault(key,re)
+        sent.setdefault(key,se)
+    net_io = {'eth':eth_info,'recv':recv,'sent':sent}
     return JsonResponse(net_io)
+
+def hardinfo(request):
+    return render(request,'hardinfo.html')
 
 def index(request):
     return render(request,'dashboard.html')
+

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id='content'>
+  <div class="panel panel-primary" id="i_cpu">
+    <div class="panel-heading" id="i_head_cpu" style="background: rgb(66, 85, 105);">
+      <h3 class="panel-title">Cpu</h3>
+    </div>
+    <div class="panel-body" id="cpu_chart">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>
+            条目
+          </th>
+          <th>
+            详细内容
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>
+            生产商
+          </td>
+          <td>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+  var step = ['cpu'];
+//  gen_div(step);
+
+  window.setInterval(getNowTime,1000);
+  var lu_class = $("#launcher_info").attr("class");
+  $("#launcher_info").attr("class","active "+lu_class);
+
+  function getCPUinfo(url) {
+    $.getJSON(url,function (ret) {
+      console.log(ret.flags);
+    })
+  }
+  getCPUinfo("{% url 'get_cpu_info' %}")
+</script>
+{% endblock %}
