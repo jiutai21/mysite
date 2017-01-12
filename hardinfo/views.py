@@ -25,12 +25,13 @@ def get_bios_info(request):
 
 
 def get_eth_info(request):
+    eth_list = get_eth_name_s()
     msg = run_the_cmd("lspci | grep 'Ethernet'")
     eth_info = {}
     i=0
     for x in msg:
         msg = x.split(':')[-1:][0].strip('\n')
-        eth_info['eht%d' % i] = msg
+        eth_info[eth_list[i]] = msg
         i+=1
     return JsonResponse(eth_info)
 
@@ -135,6 +136,17 @@ def get_net_io(request):
         sent.setdefault(key,se)
     net_io = {'eth':eth_info,'recv':recv,'sent':sent}
     return JsonResponse(net_io)
+
+info_func = {'cpu':get_cpu_info,'board':get_board_info,'eth':get_eth_info,'bios':get_bios_info,'vga':get_vga_info}
+def get_info(request):
+    ret = request.GET.get('p')
+    if ret in info_func:
+        return info_func[ret](request)
+    else:
+        return JsonResponse({})
+
+def process(request):
+    return render(request,'process.html')
 
 def hardinfo(request):
     return render(request,'hardinfo.html')

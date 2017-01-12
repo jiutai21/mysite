@@ -277,3 +277,93 @@ function getNetIO(url) {
     }, 1000)
   })
 }
+/********Hard Info**********/
+function gen_table(step) {
+  var len = arguments.length;
+  var arg="";
+  if(len == 1){
+    var pro = "属性";
+    var deta = "详细内容";
+  }else{
+    var pro = arguments[1];
+    var deta = arguments[2];
+  }
+  if(arguments[3]){
+    arg = arguments[3];
+  }
+  console.log(step);
+  for(x of step){
+    $("#"+x+"_chart").append("<table class='table table-bordered' id='table_"+x+"'></table>" );
+    $("#table_"+x).append("<thead id='thead_"+x+"'></thead>");
+    $("#thead_"+x).append("<tr><th>" + pro + "</th><th>" +deta+"</th>" + arg +"</tr>");
+    $("#table_"+x).append("<tbody id='tbody_"+x+"'></tbody>");
+  }
+}
+function gen_property(step,property,details) {
+  $("#tbody_"+step).append("<tr><td>"+property+"</td><td>"+details+"</td></tr>");
+}
+
+function get_info(url,info,step) {
+  $.getJSON(url,info,function (ret) {
+    for(var x in ret){
+      gen_property(step,x,ret[x]);
+    }
+  })
+}
+
+function gen_info(url,step) {
+  for(var x of step){
+    get_info(url,'p=' + x,x);
+  }
+}
+
+/********Process**************/
+function getProcess(url,step) {
+  $.getJSON(url,function (ret) {
+    for(var x in ret){
+      gen_property(step,x,ret[x]);
+    }
+  })
+
+  var th = $('#thead_process').find("th");
+  th[0].id = "th_id_01";
+  th[1].id = "th_id_02";
+
+  $('#th_id_01').css("padding","0");
+  $('#th_id_02').css("padding","0");
+
+  set_button(url,step);
+}
+function set_button(url,step) {
+  $('#th_id_01').click(function () {
+    $.getJSON(url,function (ret) {
+      $("#tbody_process").empty();
+      for(var x in ret){
+        gen_property(step,x,ret[x]);
+      }
+    })
+  });
+  $('#th_id_02').click(function () {
+    $.getJSON(url,function (ret) {
+      $("#tbody_process").empty();
+      var arr = new Array();
+      var name = new Array();
+      for(var x in ret){
+        arr[ret[x]]=x;
+        name.push(ret[x]);
+      }
+      name.sort(function (a, b) {
+//        c = a.replace(/\/.*\//,"");
+//        d = b.replace(/\/.*\//,"");
+        if(a.substring(0,1).toLowerCase() > b.substring(0,1).toLowerCase()){
+          return 1;
+        }
+        return -1;
+      });
+
+      for(var x of name){
+        gen_property(step,arr[x],x);
+      }
+    })
+  });
+}

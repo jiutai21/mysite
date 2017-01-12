@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     url(r'^$',views.index,name='index'),
     url(r'^hardinfo/$',views.hardinfo,name='index_hardinfo'),
+    url(r'^process/$',views.process,name='index_process'),
 
     url(r'^get_net_io/$',views.get_net_io,name='get_net_io'),
     url(r'^get_vga_info/$',views.get_vga_info,name='get_vga_info'),
@@ -20,6 +21,7 @@ urlpatterns = [
     url(r'^get_ram_usage/$',views.get_ram_usage,name='get_ram_usage'),
     url(r'^get_cpu_usage/$',views.get_cpu_usage,name='get_cpu_usage'),
     url(r'^get_boot_time/$',views.get_boot_time,name='get_boot_time'),
+    url(r'^get_info/$',views.get_info,name='get_info'),
 ]
 
 
