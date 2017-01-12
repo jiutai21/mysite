@@ -88,3 +88,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+/mysite/__pycache__
+/hardinfo/migrations/__pycache__
+/hardinfo/__pycache__
