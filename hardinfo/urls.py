@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^$',views.index,name='index'),
     url(r'^hardinfo/$',views.hardinfo,name='index_hardinfo'),
     url(r'^process/$',views.process,name='index_process'),
+    url(r'^page/$',views.page,name='index_page'),
 
     url(r'^get_net_io/$',views.get_net_io,name='get_net_io'),
     url(r'^get_vga_info/$',views.get_vga_info,name='get_vga_info'),

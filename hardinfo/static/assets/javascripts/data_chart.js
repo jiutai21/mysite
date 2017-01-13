@@ -16,6 +16,33 @@ function gen_div(step) {
   }
   $(".panel-heading").css('background', 'rgb(66,85,105)');
 }
+
+function gen_tbody(x) {
+    var len = arguments.length;
+  var arg = "";
+  if (len == 1) {
+    var pro = "属性";
+    var deta = "详细内容";
+  } else {
+    var pro = arguments[1];
+    var deta = arguments[2];
+  }
+  if (arguments[3]) {
+    arg = arguments[3];
+  }
+  $("#table_" + x).append("<thead id='thead_" + x + "'></thead>");
+  $("#thead_" + x).append("<tr><th>" + pro + "</th><th>" + deta + "</th>" + arg + "</tr>");
+  $("#table_" + x).append("<tbody id='tbody_" + x + "'></tbody>");
+}
+
+function gen_table(step) {
+  $("#" + x + "_chart").append("<table class='table table-bordered' id='table_" + step + "'></table>");
+}
+
+function gen_property(step, property, details) {
+  $("#tbody_" + step).append("<tr><td>" + property + "</td><td>" + details + "</td></tr>");
+}
+
 /***********DISK******************/
 function disk_usage(disk, dd, label) {
   var ctx = document.getElementById(disk).getContext("2d");
@@ -278,30 +305,6 @@ function getNetIO(url) {
   })
 }
 /********Hard Info**********/
-function gen_table(step) {
-  var len = arguments.length;
-  var arg = "";
-  if (len == 1) {
-    var pro = "属性";
-    var deta = "详细内容";
-  } else {
-    var pro = arguments[1];
-    var deta = arguments[2];
-  }
-  if (arguments[3]) {
-    arg = arguments[3];
-  }
-  console.log(step);
-  for (x of step) {
-    $("#" + x + "_chart").append("<table class='table table-bordered' id='table_" + x + "'></table>");
-    $("#table_" + x).append("<thead id='thead_" + x + "'></thead>");
-    $("#thead_" + x).append("<tr><th>" + pro + "</th><th>" + deta + "</th>" + arg + "</tr>");
-    $("#table_" + x).append("<tbody id='tbody_" + x + "'></tbody>");
-  }
-}
-function gen_property(step, property, details) {
-  $("#tbody_" + step).append("<tr><td>" + property + "</td><td>" + details + "</td></tr>");
-}
 
 function get_info(url, info, step) {
   $.getJSON(url, info, function (ret) {

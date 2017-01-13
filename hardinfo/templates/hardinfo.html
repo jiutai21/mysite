@@ -14,8 +14,10 @@
   var step = ['cpu','board','eth','bios','vga'];
   gen_div(step);
 
-  gen_table(step);
-
+  for(var x of step) {
+    gen_table(x);
+    gen_tbody(x);
+  }
   gen_info("{% url 'get_info' %}",step);
 </script>
 {% endblock %}

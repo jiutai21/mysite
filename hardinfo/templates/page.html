@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div id='content'>
+
+  </div>
+{% endblock %}
+
+{% block javascript %}
+  {% load static %}
+  <script src="{% static 'assets/javascripts/jqPaginator.min.js' %}" type="text/javascript"></script>
+  <script>
+    window.setInterval(getNowTime, 1000);
+    var lu_class = $("#launcher_process").attr("class");
+    $("#launcher_process").attr("class", "active " + lu_class);
+    var step = ['process']
+    gen_div(step);
+    function gen_pagination(step) {
+      $("#" + step + "_chart").append("<div class='pagination pagination-large pagination-centered' id='pag_" + step + "'></div>");
+    }
+
+    function get_process_count() {
+      $.getJSON("{% url 'get_info' %}", "p=process_count", function (ret) {
+        var p = ret.count / 10;
+        p = Math.ceil(p);
+
+        $.getJSON("{% url 'get_processes_info' %}", function (ret) {
+          var name = new Array();
+          var spli = new Array();
+          for (var x in ret) {
+            name.push(x);
+          }
+          for (var i = 0; i < p; i++) {
+            spli.push(name.splice(0, 10));
+          }
+
+          for (var i = 0; i < p; i++) {
+            gen_table(step + (i + 1));
+            $('#table_' + step + (i + 1)).css("display", "none");
+            gen_tbody(step + (i + 1),
+              "<a style='height: 58px' class='button button-large button-block'>进程ID</a>",
+              "<a style='height: 58px' class='button button-large button-block'>进程名</a>");
+
+            for (var x of spli[i]) {
+              gen_property(step + (i + 1), x, ret[x]);
+            }
+          }
+          $('#table_' + step + '1').addClass("current");
+          $('#table_' + step + '1').removeAttr("style");
+        })
+        $("#pag_process").jqPaginator({
+          totalPages: p,
+          visiblePages: 5,
+          currentPage: 1,
+          onPageChange: function (page) {
+            $('.table-bordered').removeClass('current').hide();
+            $('#table_process' + page).addClass('current').show();
+          }
+        });
+      })
+    }
+
+    get_process_count();
+    gen_pagination(step);
+
+
+  </script>
+{% endblock %}
