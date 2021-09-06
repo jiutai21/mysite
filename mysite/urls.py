@@ -20,6 +20,8 @@ from django.conf import settings
 
 
 urlpatterns = [
+    url(r'',include('hardinfo.urls')),
+    url(r'^$',include('hardinfo.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^hardinfo/',include('hardinfo.urls')),
 ] + static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
